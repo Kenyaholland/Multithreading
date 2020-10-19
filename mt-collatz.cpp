@@ -18,14 +18,13 @@ int main(int argc, char *argv[]){
 		}
 	}while(command.empty());
 	
-	//checks for "-Debug" and if ture, will print parameter values
-	std::string debug = "-nolock";
+	std::string nolock = "-nolock";
 	std::string toCompare;
 	
 	for(int i = 0; i < argc; i++){
 		toCompare = *(argv+i);	
 		
-		if(toCompare == debug){
+		if(toCompare == nolock){
 			//do something
 			break;
 		}
