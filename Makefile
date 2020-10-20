@@ -1,10 +1,10 @@
 CXX = g++
-CXXFLAGS = -std=c++11 -Wall
+CXXFLAGS = -std=c++11 -pthread -Wall
 
-#OBJECTS = 
+OBJECTS = functions.o
 
 mt-collatz: mt-collatz.o $(OBJECTS)
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
 clean:
-	$(RM) *.o *.txt myshell
+	$(RM) *.o *.txt mt-collatz

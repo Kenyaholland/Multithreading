@@ -1,32 +1,72 @@
 #include <iostream>
+#include <string>
+#include <cstdlib>
+#include <time.h>
+#include <pthread.h>
+#include <iomanip>
+#include "functions.hpp"
 
-int main(int argc, char *argv[]){
+void* collatz(void *param);
 
-	std::string command;
+pthread_mutex_t lock;
+const int K = 1001;
+int histogram[K] = {0};
+int counter = 2;
+bool isLocked = false;
+
+int main(int argc, char **argv){
+	struct timespec time[2];
+	clock_gettime(CLOCK_REALTIME,time);
 	
-	//loops if string is empty
-	do{
-		std::cout << "\n$$$ ";
-		std::getline(std::cin, command);
-		
-		//will not execute if there was no user input
-		if(!command.empty()){
-			//do something
-			
-			//if user entered "exit", program will terminate
-			//CheckExit();
+	Functions function;
+	int N = 0;
+	int T = 0;
+	function.CheckArgs(argc,argv);
+	function.Init(argc,argv,N,T,isLocked);
+	
+	//creates one thread
+	int x = 3;
+	int *n = &x;
+	pthread_t tid;
+	pthread_create(&tid,NULL,collatz,(void*)n);
+	pthread_join(tid,NULL);
+	
+	clock_gettime(CLOCK_REALTIME,time+1);
+	double diff = function.Clock(time);
+
+	function.PrintHistogram(histogram,K,N,T,diff);
+}
+
+void* collatz(void *param){
+	int *n = (int*)param;
+	int stopTime = 0;
+	
+	while(*n != 1){
+		if(*n % 2 == 0){
+			*n /= 2;
+			stopTime++;
 		}
-	}while(command.empty());
-	
-	std::string nolock = "-nolock";
-	std::string toCompare;
-	
-	for(int i = 0; i < argc; i++){
-		toCompare = *(argv+i);	
-		
-		if(toCompare == nolock){
-			//do something
-			break;
+		else{
+			*n = 3*(*n) + 1;
+			stopTime++;
 		}
 	}
+	
+	if(!isLocked){
+		pthread_mutex_lock (&lock);
+		std::cout << "locked\n";
+	}
+	else{
+		std::cout << "not locked\n";
+	}
+	
+	histogram[stopTime] += 1;
+	counter++;
+	
+	if(!isLocked){
+		pthread_mutex_unlock(&lock);
+		std::cout << "then unlocked \n";
+	}
+	
+	pthread_exit(0);
 }
