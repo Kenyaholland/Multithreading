@@ -11,14 +11,14 @@ void Functions::CheckArgs(int argc, char** argv){
 		exit(0);
 	}
 	else{
-			if(atoi(argv[2]) > 30 || atoi(argv[2]) < 1){
-				std::cout << "T must be 1 - 30\n";
-				exit(0);
-			}
+		if(atoi(argv[2]) > 30 || atoi(argv[2]) < 1){
+			std::cout << "T must be 1 - 30\n";
+			exit(0);
+		}
 	}
 }
 
-void Functions::Init(int argc, char** argv, int &N, int &T, bool &isLocked){
+void Functions::Init(int argc, char** argv, int &N, int &T, bool &noLock){
 	N = atoi(argv[1]);
 	T = atoi(argv[2]);
 	
@@ -27,9 +27,9 @@ void Functions::Init(int argc, char** argv, int &N, int &T, bool &isLocked){
 	
 	for(int i = 0; i < argc; i++){
 		toCompare = *(argv+i);
-		
+
 		if(toCompare == toLock){
-			isLocked = true;
+			noLock = true;
 			break;
 		}
 	}

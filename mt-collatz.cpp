@@ -12,7 +12,7 @@ pthread_mutex_t lock;
 const int K = 1001;
 int histogram[K] = {0};
 int counter = 2;
-bool isLocked = false;
+bool noLock = false;
 
 int main(int argc, char **argv){
 	struct timespec time[2];
@@ -22,7 +22,7 @@ int main(int argc, char **argv){
 	int N = 0;
 	int T = 0;
 	function.CheckArgs(argc,argv);
-	function.Init(argc,argv,N,T,isLocked);
+	function.Init(argc,argv,N,T,noLock);
 	
 	//creates one thread
 	int x = 3;
@@ -52,7 +52,7 @@ void* collatz(void *param){
 		}
 	}
 	
-	if(!isLocked){
+	if(!noLock){
 		pthread_mutex_lock (&lock);
 		std::cout << "locked\n";
 	}
@@ -63,7 +63,7 @@ void* collatz(void *param){
 	histogram[stopTime] += 1;
 	counter++;
 	
-	if(!isLocked){
+	if(!noLock){
 		pthread_mutex_unlock(&lock);
 		std::cout << "then unlocked \n";
 	}
