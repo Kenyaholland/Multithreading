@@ -13,8 +13,13 @@ void* threadFunction(void* param);
 pthread_mutex_t lock;
 const int K = 501;
 int histogram[K] = {0};
+<<<<<<< HEAD
 std::atomic<int> counter (2);
 bool isLocked = false;
+=======
+int counter = 2;
+bool noLock = false;
+>>>>>>> 3b6e2866f4f8919560ba9ad46e782ee008b3d146
 
 int main(int argc, char **argv){
 	struct timespec time[2];
@@ -24,7 +29,7 @@ int main(int argc, char **argv){
 	int N = 0;
 	int T = 0;
 	function.CheckArgs(argc,argv);
-	function.Init(argc,argv,N,T,isLocked);
+	function.Init(argc,argv,N,T,noLock);
 	
 	int x = 3;
 	int *n = &x;
@@ -61,18 +66,34 @@ void* threadFunction(void* param){
 int collatz(int n){
 	int stopTime = 1;
 	
+<<<<<<< HEAD
 	if(n == 1){
 		return stopTime;
+=======
+	if(!noLock){
+		pthread_mutex_lock (&lock);
+		std::cout << "locked\n";
+>>>>>>> 3b6e2866f4f8919560ba9ad46e782ee008b3d146
 	}
 	else if(n % 2 == 0){
 		n = n / 2;
 		stopTime++;
 		collatz(n);
 	}
+<<<<<<< HEAD
 	else{
 		n = 3*(n) + 1;
 		stopTime++;
 		collatz(n);
+=======
+	
+	histogram[stopTime] += 1;
+	counter++;
+	
+	if(!noLock){
+		pthread_mutex_unlock(&lock);
+		std::cout << "then unlocked \n";
+>>>>>>> 3b6e2866f4f8919560ba9ad46e782ee008b3d146
 	}
 	return 0;
 }
