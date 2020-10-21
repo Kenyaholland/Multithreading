@@ -11,10 +11,10 @@ void Functions::CheckArgs(int argc, char** argv){
 		exit(0);
 	}
 	else{
-		if(atoi(argv[2]) > 30 || atoi(argv[2]) < 1){
-			std::cout << "T must be 1 - 30\n";
-			exit(0);
-		}
+			if(atoi(argv[2]) > 30 || atoi(argv[2]) < 1){
+				std::cout << "T must be 1 - 30\n";
+				exit(0);
+			}
 	}
 }
 
@@ -27,7 +27,7 @@ void Functions::Init(int argc, char** argv, int &N, int &T, bool &noLock){
 	
 	for(int i = 0; i < argc; i++){
 		toCompare = *(argv+i);
-
+		
 		if(toCompare == toLock){
 			noLock = true;
 			break;
@@ -44,7 +44,7 @@ double Functions::Clock(struct timespec *time){
 
 void Functions::PrintHistogram(int *histogram,int K, int N, int T, double diff){
 	for(int i = 1; i < K; i++){
-		if(histogram[i] > 0) //delete this line when done
+		//if(histogram[i] > 0) //delete this line when done
 		std::cout << "K = " << i << ", " << histogram[i] << std::endl;
 	}
 	std::cout << N << "," << T << "," << diff << std::endl;

@@ -2,24 +2,22 @@
 #include <string>
 #include <cstdlib>
 #include <time.h>
+#include <mutex>
 #include <pthread.h>
+#include <thread>
 #include <iomanip>
 #include <atomic>
 #include "functions.hpp"
+#include <vector>
 
 int collatz(int n);
 void* threadFunction(void* param);
 
-pthread_mutex_t lock;
+std::mutex lock;
 const int K = 501;
 int histogram[K] = {0};
-<<<<<<< HEAD
 std::atomic<int> counter (2);
-bool isLocked = false;
-=======
-int counter = 2;
 bool noLock = false;
->>>>>>> 3b6e2866f4f8919560ba9ad46e782ee008b3d146
 
 int main(int argc, char **argv){
 	struct timespec time[2];
@@ -31,13 +29,14 @@ int main(int argc, char **argv){
 	function.CheckArgs(argc,argv);
 	function.Init(argc,argv,N,T,noLock);
 	
-	int x = 3;
-	int *n = &x;
-	pthread_t tid;
+	int *n = &N;
+	std::vector<std::thread> threads;
+	
 	for(int i = 0; i < T; i++){
-		std::cout << "Making thread " << i << std::endl;
-		pthread_create(&tid+i,NULL,threadFunction,(void*)n);
-		pthread_join(tid+i,NULL);
+		threads.push_back(std::thread(threadFunction,(void*)n));
+	}
+	for(int j = 0; j < T; j++){
+		threads[j].join();
 	}
 	
 	clock_gettime(CLOCK_REALTIME,time+1);
@@ -52,48 +51,45 @@ void* threadFunction(void* param){
 	int n = 0;
 	
 	while(counter < *num){
-		pthread_mutex_lock (&lock);
+		lock.lock();
 		n = counter;
 		stopTime = collatz(n);
 		histogram[stopTime] += 1;
-		std::cout << "Value at " << stopTime << ": " << histogram[stopTime] << std::endl;
 		counter++;
-		pthread_mutex_unlock (&lock);
+		lock.unlock();
 	}
 	pthread_exit(0);
 }
 
 int collatz(int n){
-	int stopTime = 1;
+	int stopTime = 0;
 	
-<<<<<<< HEAD
-	if(n == 1){
-		return stopTime;
-=======
-	if(!noLock){
-		pthread_mutex_lock (&lock);
+	while(n != 1){
+		if(n % 2 == 0){
+			n /= 2;
+			stopTime++;
+		}
+		else{
+			n = 3*n + 1;
+			stopTime++;
+		}
+	}
+	
+	/*if(!noLock){
+		lock.lock();
 		std::cout << "locked\n";
->>>>>>> 3b6e2866f4f8919560ba9ad46e782ee008b3d146
 	}
-	else if(n % 2 == 0){
-		n = n / 2;
-		stopTime++;
-		collatz(n);
-	}
-<<<<<<< HEAD
 	else{
-		n = 3*(n) + 1;
-		stopTime++;
-		collatz(n);
-=======
+		std::cout << "not locked\n";
+	}
 	
 	histogram[stopTime] += 1;
 	counter++;
 	
 	if(!noLock){
-		pthread_mutex_unlock(&lock);
+		lock.unlock();
 		std::cout << "then unlocked \n";
->>>>>>> 3b6e2866f4f8919560ba9ad46e782ee008b3d146
-	}
-	return 0;
+	}*/
+	
+	return stopTime;
 }
