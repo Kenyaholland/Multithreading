@@ -4,14 +4,16 @@
 #include <time.h>
 #include <pthread.h>
 #include <iomanip>
+#include <atomic>
 #include "functions.hpp"
 
-void* collatz(void *param);
+int collatz(int n);
+void* threadFunction(void* param);
 
 pthread_mutex_t lock;
-const int K = 1001;
+const int K = 501;
 int histogram[K] = {0};
-int counter = 2;
+std::atomic<int> counter (2);
 bool isLocked = false;
 
 int main(int argc, char **argv){
@@ -24,12 +26,14 @@ int main(int argc, char **argv){
 	function.CheckArgs(argc,argv);
 	function.Init(argc,argv,N,T,isLocked);
 	
-	//creates one thread
 	int x = 3;
 	int *n = &x;
 	pthread_t tid;
-	pthread_create(&tid,NULL,collatz,(void*)n);
-	pthread_join(tid,NULL);
+	for(int i = 0; i < T; i++){
+		std::cout << "Making thread " << i << std::endl;
+		pthread_create(&tid+i,NULL,threadFunction,(void*)n);
+		pthread_join(tid+i,NULL);
+	}
 	
 	clock_gettime(CLOCK_REALTIME,time+1);
 	double diff = function.Clock(time);
@@ -37,36 +41,38 @@ int main(int argc, char **argv){
 	function.PrintHistogram(histogram,K,N,T,diff);
 }
 
-void* collatz(void *param){
-	int *n = (int*)param;
+void* threadFunction(void* param){
+	int* num = (int*)param;
 	int stopTime = 0;
+	int n = 0;
 	
-	while(*n != 1){
-		if(*n % 2 == 0){
-			*n /= 2;
-			stopTime++;
-		}
-		else{
-			*n = 3*(*n) + 1;
-			stopTime++;
-		}
-	}
-	
-	if(!isLocked){
+	while(counter < *num){
 		pthread_mutex_lock (&lock);
-		std::cout << "locked\n";
+		n = counter;
+		stopTime = collatz(n);
+		histogram[stopTime] += 1;
+		std::cout << "Value at " << stopTime << ": " << histogram[stopTime] << std::endl;
+		counter++;
+		pthread_mutex_unlock (&lock);
+	}
+	pthread_exit(0);
+}
+
+int collatz(int n){
+	int stopTime = 1;
+	
+	if(n == 1){
+		return stopTime;
+	}
+	else if(n % 2 == 0){
+		n = n / 2;
+		stopTime++;
+		collatz(n);
 	}
 	else{
-		std::cout << "not locked\n";
+		n = 3*(n) + 1;
+		stopTime++;
+		collatz(n);
 	}
-	
-	histogram[stopTime] += 1;
-	counter++;
-	
-	if(!isLocked){
-		pthread_mutex_unlock(&lock);
-		std::cout << "then unlocked \n";
-	}
-	
-	pthread_exit(0);
+	return 0;
 }
