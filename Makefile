@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++11 -pthread -Wall
+CXXFLAGS = -std=c++11 -lpthread -Wall
 
 OBJECTS = functions.o
 

@@ -31,12 +31,12 @@ int main(int argc, char **argv){
 	
 	int *n = &N;
 	std::vector<std::thread> threads;
-	
 	for(int i = 0; i < T; i++){
+		
 		threads.push_back(std::thread(threadFunction,(void*)n));
 	}
 	for(int j = 0; j < T; j++){
-		threads[j].join();
+		threads.at(j).join();
 	}
 	
 	clock_gettime(CLOCK_REALTIME,time+1);
@@ -48,20 +48,24 @@ int main(int argc, char **argv){
 void* threadFunction(void* param){
 	int* num = (int*)param;
 	int stopTime = 0;
-	int n = 0;
 	
 	while(counter < *num){
-		lock.lock();
-		n = counter;
-		stopTime = collatz(n);
-		histogram[stopTime] += 1;
+		if(!noLock){
+			lock.lock();
+		}
+		stopTime = collatz(counter);
+		std::cout << counter << std::endl;
 		counter++;
-		lock.unlock();
+		histogram[stopTime] += 1;
+		if(!noLock){
+			lock.unlock();
+		}
 	}
 	pthread_exit(0);
 }
 
 int collatz(int n){
+	
 	int stopTime = 0;
 	
 	while(n != 1){
@@ -74,22 +78,6 @@ int collatz(int n){
 			stopTime++;
 		}
 	}
-	
-	/*if(!noLock){
-		lock.lock();
-		std::cout << "locked\n";
-	}
-	else{
-		std::cout << "not locked\n";
-	}
-	
-	histogram[stopTime] += 1;
-	counter++;
-	
-	if(!noLock){
-		lock.unlock();
-		std::cout << "then unlocked \n";
-	}*/
-	
+
 	return stopTime;
 }
