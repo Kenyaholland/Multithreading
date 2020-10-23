@@ -83,6 +83,7 @@ void* threadFunction(void* param){
 		if(!noLock){
 			lock.lock();
 		}
+		stopTime = collatz(counter);
 		counter++;
 		histogram[stopTime] += 1;
 		if(!noLock){
