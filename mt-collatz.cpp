@@ -42,6 +42,8 @@ int histogram[K] = {0}; //keeps track of stop times
 std::atomic<unsigned int> counter (2); //global counter for threads to allocate
 bool noLock = false; //will determine if locks are used
 
+int testNum = 0;
+
 int main(int argc, char **argv){
 	
 	//start time
@@ -87,10 +89,9 @@ void threadFunction(unsigned int param){
 		stopTime = collatz(num);
 		
 		toLock();
+		//std::cout << "testNum: " << testNum+2 << std::endl;
+		//stestNum++;
 		histogram[stopTime] += 1;
-		toUnlock();
-		
-		toLock();
 		num = counter++;
 		toUnlock();
 
