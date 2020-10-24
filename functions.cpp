@@ -1,3 +1,13 @@
+/** @file functions.cpp
+ *  @brief This class has a sole purpose of seperating code from main to make it easier to read.
+ *
+ *	This class reads in arguments for error checking, assigns N and T variables and checks for "-nolock",
+ *	contains functionality for the timer of this program, and prints out the results (histogram and total time). 
+ *
+ *  @author Thati Vang (tv20)
+ *  @author Kenya Holland (kmh99)
+ */
+
 #include "functions.hpp"
 
 void Functions::CheckArgs(int argc, char** argv){
@@ -10,15 +20,13 @@ void Functions::CheckArgs(int argc, char** argv){
 		std::cout << "Both N and T must be a number.\n";
 		exit(0);
 	}
-	else{
-		if(atoi(argv[2]) > 30 || atoi(argv[2]) < 1){
-			std::cout << "T must be 1 - 30\n";
-			exit(0);
-		}
+	else if(atoi(argv[2]) > 30 || atoi(argv[2]) < 1){
+		std::cout << "T must be 1 - 30\n";
+		exit(0);
 	}
 }
 
-void Functions::Init(int argc, char** argv, int &N, int &T, bool &noLock){
+void Functions::Init(int argc, char** argv, unsigned int &N, int &T, bool &noLock){
 	N = atoi(argv[1]);
 	T = atoi(argv[2]);
 	
@@ -27,7 +35,7 @@ void Functions::Init(int argc, char** argv, int &N, int &T, bool &noLock){
 	
 	for(int i = 0; i < argc; i++){
 		toCompare = *(argv+i);
-
+		
 		if(toCompare == toLock){
 			noLock = true;
 			break;
@@ -42,10 +50,12 @@ double Functions::Clock(struct timespec *time){
 	return diff;
 }
 
-void Functions::PrintHistogram(int *histogram,int K, int N, int T, double diff){
+void Functions::PrintHistogram(int *histogram,int K, unsigned int N, int T, double diff){
+	//display histogram
 	for(int i = 1; i < K; i++){
-		if(histogram[i] > 0) //delete this line when done
-		std::cout << "K = " << i << ", " << histogram[i] << std::endl;
+		std::cout << i << "," << histogram[i] << std::endl;
 	}
-	std::cout << N << "," << T << "," << diff << std::endl;
+	
+	//display range, number of threads, and time it took.
+	std::cerr << N << "," << T << "," << diff << std::endl;
 }

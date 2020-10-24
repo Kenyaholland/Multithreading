@@ -7,4 +7,4 @@ mt-collatz: mt-collatz.o $(OBJECTS)
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
 clean:
-	$(RM) *.o *.txt mt-collatz
+	$(RM) *.o mt-collatz
