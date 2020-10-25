@@ -113,12 +113,16 @@ int collatz(unsigned int n){
 }
 
 void toLock(){
+	//locks by default
+	//will not execute when user input -nolock
 	if(!noLock){
 		lock.lock();
 	}
 }
 
 void toUnlock(){
+	//unlocks by default
+	//will not execute when user input -nolock
 	if(!noLock){
 		lock.unlock();
 	}
