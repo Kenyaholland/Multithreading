@@ -53,9 +53,9 @@ double Functions::Clock(struct timespec *time){
 void Functions::PrintHistogram(int *histogram,int K, unsigned int N, int T, double diff){
 	//display histogram
 	for(int i = 1; i < K; i++){
-		//std::cout << i << "," << histogram[i] << std::endl;
+		std::cout << i << "," << histogram[i] << std::endl;
 	}
 	
-	//display range, number of threads, and time it took.
+	//display range, number of threads, and time taken.
 	std::cerr << N << "," << T << "," << diff << std::endl;
 }

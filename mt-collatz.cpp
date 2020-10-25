@@ -37,7 +37,7 @@ void toLock();
 void toUnlock();
 
 std::mutex lock; //to prevent race conditions
-const int K = 501; //size of histogram array
+const int K = 1001; //size of histogram array
 int histogram[K] = {0}; //keeps track of stop times
 std::atomic<unsigned int> counter (2); //global counter for threads to allocate
 bool noLock = false; //will determine if locks are used
@@ -89,15 +89,10 @@ void threadFunction(unsigned int param){
 		stopTime = collatz(num);
 		
 		toLock();
-		//std::cout << "testNum: " << testNum+2 << std::endl;
-		//stestNum++;
 		histogram[stopTime] += 1;
 		num = counter++;
 		toUnlock();
-
 	}
-	
-	pthread_exit(0);
 }
 
 int collatz(unsigned int n){
@@ -126,5 +121,5 @@ void toLock(){
 void toUnlock(){
 	if(!noLock){
 		lock.unlock();
-	}	
+	}
 }
